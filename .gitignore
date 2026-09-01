@@ -1,14 +1,51 @@
+# Environment files
 .env
-.env.*
-!.env.example
+.env.local
+.env.production
+.env.example  # Optional: exclude example too
 
-venv/
-.venv/
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-flask_sessions/*
-!flask_sessions/.gitkeep
+# Flask
+instance/
+.webassets-cache
+flask_sessions/
+audio_files/
+data/
 
-audio_files/*
-!audio_files/.gitkeep
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
