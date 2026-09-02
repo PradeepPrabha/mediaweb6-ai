@@ -1,7 +1,8 @@
-# app.py - Media Web 6 AI Backend (HYBRID MODE)
+# app.py - Media Web 6 AI Backend (HYBRID MODE WITH MULTI-LANGUAGE)
 # ============================================================
 # MEDIA WEB 6 AI - Backend
 # Hybrid: Grok API + Intelligent Fallback
+# Multi-language voice support
 # Fully trained with Media Web 6 Services complete data
 # ============================================================
 
@@ -137,46 +138,52 @@ To shape a future where companies grow stronger through smart digital solutions.
         "working_hours": "Mon - Fri, 9AM - 7PM"
     },
     
-    # Services
+    # Services with detailed pricing
     "services": {
         "web_development": {
             "name": "Web Development",
             "description": "Custom website development, e-commerce platforms, CMS solutions, and web applications",
             "technologies": ["React", "Next.js", "Node.js", "PHP", "WordPress", "Magento", "Shopify", "HTML5", "CSS3", "JavaScript"],
             "types": ["Corporate Websites", "E-commerce Stores", "Web Portals", "PWA Applications", "Landing Pages"],
-            "pricing": "₹25,000+"
+            "pricing": "₹25,000+",
+            "pricing_detail": "Starting from ₹25,000 for basic websites. E-commerce and complex projects start from ₹50,000."
         },
         "seo_optimization": {
             "name": "SEO Optimization",
             "description": "Search engine optimization to improve organic rankings and visibility",
             "services": ["On-Page SEO", "Off-Page SEO", "Technical SEO", "Local SEO", "E-commerce SEO", "Content Strategy"],
-            "pricing": "₹10,000+/month"
+            "pricing": "₹10,000+/month",
+            "pricing_detail": "SEO packages start from ₹10,000 per month. Comprehensive packages include monthly reports and strategy updates."
         },
         "graphic_design": {
             "name": "Graphic Design",
             "description": "Creative visual design solutions for branding and marketing",
             "services": ["Logo Design", "Brand Identity", "Social Media Graphics", "Print Materials", "Packaging Design", "UI Design"],
-            "pricing": "₹5,000+"
+            "pricing": "₹5,000+",
+            "pricing_detail": "Logo design starts from ₹5,000. Complete branding packages start from ₹15,000."
         },
         "mobile_application": {
             "name": "Mobile Application",
             "description": "Native and cross-platform mobile applications for iOS and Android",
             "technologies": ["React Native", "Flutter", "Swift", "Kotlin", "Java"],
             "types": ["Business Apps", "E-commerce Apps", "Social Apps", "Healthcare Apps", "Educational Apps"],
-            "pricing": "₹50,000+"
+            "pricing": "₹50,000+",
+            "pricing_detail": "Mobile app development starts from ₹50,000. Complex apps with backend integration start from ₹1,00,000."
         },
         "digital_marketing": {
             "name": "Digital Marketing",
             "description": "Comprehensive digital marketing strategies to boost online presence and conversions",
             "services": ["SEO", "Social Media Marketing", "Content Marketing", "Google Ads", "Email Marketing", "Analytics", "SMM"],
-            "pricing": "₹15,000+/month"
+            "pricing": "₹15,000+/month",
+            "pricing_detail": "Digital marketing packages start from ₹15,000 per month. Includes SEO, social media, and content marketing."
         },
         "desktop_application": {
             "name": "Desktop Application",
             "description": "Custom desktop applications for Windows, Mac, and Linux",
             "technologies": ["Electron", "Java", "Python", "C#", ".NET"],
             "types": ["Business Software", "Enterprise Applications", "Utility Tools", "Management Systems"],
-            "pricing": "₹30,000+"
+            "pricing": "₹30,000+",
+            "pricing_detail": "Desktop application development starts from ₹30,000. Enterprise solutions start from ₹75,000."
         }
     },
     
@@ -200,8 +207,8 @@ To shape a future where companies grow stronger through smart digital solutions.
         "delivery": "Fast Delivery Quick turnaround with top quality"
     },
     
-    # Pricing
-    "pricing": {
+    # Pricing Summary
+    "pricing_summary": {
         "web_development": "Starting from ₹25,000",
         "mobile_apps": "Starting from ₹50,000",
         "digital_marketing": "Starting from ₹15,000/month",
@@ -210,40 +217,50 @@ To shape a future where companies grow stronger through smart digital solutions.
         "desktop_applications": "Starting from ₹30,000"
     },
     
-    # FAQs
+    # FAQs with more detailed answers
     "faqs": [
         {"question": "what services do you offer", 
-         "answer": "We offer Web Development, SEO Optimization, Graphic Design, Mobile Application Development, Digital Marketing, and Desktop Application Development."},
+         "answer": "We offer 6 core services: Web Development, SEO Optimization, Graphic Design, Mobile Application Development, Digital Marketing, and Desktop Application Development. Each service is tailored to your specific needs."},
         {"question": "how much does a website cost", 
-         "answer": "Our web development starts from ₹25,000, depending on complexity and features."},
+         "answer": "Our web development starts from ₹25,000 for a basic website. E-commerce and complex websites start from ₹50,000. The final cost depends on features, design complexity, and functionality requirements."},
+        {"question": "what is the cost of a mobile app", 
+         "answer": "Mobile app development starts from ₹50,000 for basic apps. Complex apps with backend integration, payment gateways, and advanced features start from ₹1,00,000. We use React Native and Flutter for cross-platform development."},
         {"question": "do you offer mobile app development", 
-         "answer": "Yes, we develop native and cross-platform mobile apps for iOS and Android using React Native and Flutter."},
+         "answer": "Yes, we develop native and cross-platform mobile apps for iOS and Android using React Native and Flutter. We build business apps, e-commerce apps, social apps, healthcare apps, and educational apps."},
         {"question": "what is your mission", 
-         "answer": "Our mission is to craft high-quality digital solutions that businesses can trust and rely on. We simplify complex challenges through intelligent, modern technology."},
+         "answer": "Our mission is to craft high-quality digital solutions that businesses can trust and rely on. We simplify complex challenges through intelligent, modern technology and ensure every solution reflects precision, performance, and long-term value."},
         {"question": "what is your vision", 
-         "answer": "To become a globally trusted partner for digital innovation and set industry standards through quality, reliability, and user-focused design."},
+         "answer": "To become a globally trusted partner for digital innovation and set industry standards through quality, reliability, and user-focused design. We aim to empower brands to evolve with confidence in a digital-first world."},
         {"question": "do you provide seo services", 
-         "answer": "Yes, we offer comprehensive SEO services including on-page, off-page, technical SEO, local SEO, and e-commerce SEO."},
+         "answer": "Yes, we offer comprehensive SEO services including on-page SEO, off-page SEO, technical SEO, local SEO, e-commerce SEO, and content strategy. SEO packages start from ₹10,000 per month."},
         {"question": "where are you located", 
-         "answer": "We are located in Coimbatore, Tamil Nadu. We serve clients globally."},
+         "answer": "We are located in Coimbatore, Tamil Nadu. We serve clients globally with our remote-first approach."},
         {"question": "what are your working hours", 
-         "answer": "We are available Monday to Friday, 9AM to 7PM."},
+         "answer": "We are available Monday to Friday, 9AM to 7PM. You can reach us anytime via email at mediawebsix@gmail.com."},
         {"question": "how can i contact you", 
-         "answer": "You can call us at +91 99942 72027 or 0422 429 2027, email us at mediawebsix@gmail.com, or visit our website www.mediaweb6.com"},
+         "answer": "You can call us at +91 99942 72027 or 0422 429 2027, email us at mediawebsix@gmail.com, WhatsApp us at +91 99942 72027, or visit our website www.mediaweb6.com"},
         {"question": "what types of projects have you worked on", 
          "answer": "We've worked on E-Commerce, Advertising, Printing & Branding, Event Management, Digital Signage, News & Media, Directory Platforms, Export & Manufacturing, and NGO & Non-Profit projects."},
         {"question": "what technologies do you use", 
-         "answer": "We use modern technologies including React, Next.js, Node.js, PHP, WordPress, React Native, Flutter, and more."},
+         "answer": "We use modern technologies including React, Next.js, Node.js, PHP, WordPress, React Native, Flutter, Electron, Java, Python, and C#."},
         {"question": "what is your tagline", 
          "answer": "Our tagline is 'Transforming Business Through Digital Innovation'."},
         {"question": "what graphic design services do you offer", 
-         "answer": "We offer Logo Design, Brand Identity, Social Media Graphics, Print Materials, Packaging Design, and UI Design."},
+         "answer": "We offer Logo Design, Brand Identity, Social Media Graphics, Print Materials, Packaging Design, and UI Design. Logo design starts from ₹5,000."},
         {"question": "what digital marketing services do you offer", 
-         "answer": "We offer SEO, Social Media Marketing, Content Marketing, Google Ads, Email Marketing, Analytics, and SMM."},
+         "answer": "We offer SEO, Social Media Marketing (SMM), Content Marketing, Google Ads, Email Marketing, and Analytics. Packages start from ₹15,000 per month."},
         {"question": "do you develop desktop applications", 
-         "answer": "Yes, we develop custom desktop applications for Windows, Mac, and Linux using Electron, Java, Python, C#, and .NET."},
+         "answer": "Yes, we develop custom desktop applications for Windows, Mac, and Linux using Electron, Java, Python, C#, and .NET. Starting from ₹30,000."},
         {"question": "what is media web 6", 
-         "answer": "Media Web 6 Services is a digital solutions company founded in 2018. We blend creativity, innovation, and technology to craft digital solutions that elevate brands and unlock new growth opportunities."}
+         "answer": "Media Web 6 Services is a digital solutions company founded in 2018. We blend creativity, innovation, and technology to craft digital solutions that elevate brands and unlock new growth opportunities."},
+        {"question": "how much does seo cost", 
+         "answer": "SEO packages start from ₹10,000 per month. This includes on-page optimization, content strategy, and monthly performance reports."},
+        {"question": "what is the price of digital marketing", 
+         "answer": "Digital marketing packages start from ₹15,000 per month. This includes SEO, social media management, content marketing, and analytics reporting."},
+        {"question": "how much for graphic design", 
+         "answer": "Logo design starts from ₹5,000. Complete branding packages including logo, business cards, and social media graphics start from ₹15,000."},
+        {"question": "what is the cost of desktop application", 
+         "answer": "Desktop application development starts from ₹30,000. Enterprise-grade solutions with complex features start from ₹75,000."}
     ]
 }
 
@@ -263,21 +280,31 @@ class MediaWeb6ResponseEngine:
         self.patterns = {
             # Service queries
             r"web development|website|web design|web dev": self.get_web_development_info,
-            r"mobile app|app development|ios app|android app": self.get_mobile_app_info,
-            r"seo|search engine|ranking": self.get_seo_info,
-            r"graphic design|design|logo|branding": self.get_graphic_design_info,
-            r"digital marketing|marketing|social media|ads": self.get_digital_marketing_info,
+            r"mobile app|app development|ios app|android app|mobile application": self.get_mobile_app_info,
+            r"seo|search engine|ranking|seo services": self.get_seo_info,
+            r"graphic design|design|logo|branding|graphics": self.get_graphic_design_info,
+            r"digital marketing|marketing|social media|ads|smm": self.get_digital_marketing_info,
             r"desktop app|desktop application|windows app": self.get_desktop_app_info,
-            r"services|offer|provide|do you do": self.get_all_services,
+            
+            # Pricing queries with more specific patterns
+            r"cost of (web|website|web development)|how much (web|website)|web price|website cost": self.get_web_pricing,
+            r"cost of (mobile|app|mobile app)|mobile app price|app cost|how much (mobile|app)": self.get_mobile_pricing,
+            r"cost of (seo|search engine)|seo price|seo cost|how much seo": self.get_seo_pricing,
+            r"cost of (graphic|design|logo)|design price|logo cost|how much (graphic|design)": self.get_design_pricing,
+            r"cost of (digital marketing|marketing|social media)|marketing price|how much marketing": self.get_marketing_pricing,
+            r"cost of (desktop|desktop app)|desktop price|how much desktop": self.get_desktop_pricing,
+            
+            # General queries
+            r"services|offer|provide|do you do|what do you": self.get_all_services,
             r"mission|purpose|goal": self.get_mission,
             r"vision|future|aspire": self.get_vision,
-            r"contact|phone|email|reach": self.get_contact,
+            r"contact|phone|email|reach|call": self.get_contact,
             r"location|address|where": self.get_location,
-            r"hours|timing|working": self.get_working_hours,
+            r"hours|timing|working|time": self.get_working_hours,
             r"achievements|projects|success": self.get_achievements,
-            r"portfolio|past work|projects": self.get_portfolio,
-            r"pricing|cost|price|charge": self.get_pricing,
-            r"technologies|tech stack|tools": self.get_technologies,
+            r"portfolio|past work|clients": self.get_portfolio,
+            r"pricing|cost|price|charge|rates": self.get_all_pricing,
+            r"technologies|tech stack|tools|technology": self.get_technologies,
             r"tagline|slogan": self.get_tagline,
             r"values|principle|belief": self.get_values,
         }
@@ -286,7 +313,7 @@ class MediaWeb6ResponseEngine:
         """Get intelligent response based on message"""
         message_lower = message.lower().strip()
         
-        # Check FAQ first
+        # Check FAQ first with exact matching
         for faq in self.knowledge["faqs"]:
             if faq["question"] in message_lower:
                 return faq["answer"]
@@ -316,7 +343,119 @@ class MediaWeb6ResponseEngine:
         return self.get_default_response()
     
     # ============================================================
-    # HANDLER METHODS
+    # PRICING HANDLER METHODS (Specific)
+    # ============================================================
+    
+    def get_web_pricing(self):
+        service = self.knowledge["services"]["web_development"]
+        return f"""🌐 **Web Development Pricing**
+
+{service['pricing_detail']}
+
+**What's included:**
+• Custom design and development
+• Responsive/mobile-friendly layout
+• CMS integration (WordPress, etc.)
+• Basic SEO optimization
+• 1 month free support
+
+Contact us at +91 99942 72027 for a detailed quote!"""
+    
+    def get_mobile_pricing(self):
+        service = self.knowledge["services"]["mobile_application"]
+        return f"""📱 **Mobile App Development Pricing**
+
+{service['pricing_detail']}
+
+**What's included:**
+• Native or cross-platform development
+• UI/UX design
+• API integration
+• App store deployment
+• 1 month free support
+
+**Technology:** React Native, Flutter, Swift, Kotlin
+
+Contact us at +91 99942 72027 for a detailed quote!"""
+    
+    def get_seo_pricing(self):
+        service = self.knowledge["services"]["seo_optimization"]
+        return f"""🔍 **SEO Services Pricing**
+
+{service['pricing_detail']}
+
+**What's included:**
+• On-page and off-page SEO
+• Technical SEO audit
+• Content strategy
+• Monthly performance reports
+• Keyword research and tracking
+
+Contact us at +91 99942 72027 for a customized SEO plan!"""
+    
+    def get_design_pricing(self):
+        service = self.knowledge["services"]["graphic_design"]
+        return f"""🎨 **Graphic Design Pricing**
+
+{service['pricing_detail']}
+
+**What's included:**
+• Logo design and brand identity
+• Social media graphics
+• Print materials
+• Packaging design
+• UI/UX design
+
+Contact us at +91 99942 72027 for a customized design quote!"""
+    
+    def get_marketing_pricing(self):
+        service = self.knowledge["services"]["digital_marketing"]
+        return f"""📊 **Digital Marketing Pricing**
+
+{service['pricing_detail']}
+
+**What's included:**
+• SEO and content marketing
+• Social media management
+• Google Ads management
+• Email marketing
+• Analytics and reporting
+
+Contact us at +91 99942 72027 for a customized marketing plan!"""
+    
+    def get_desktop_pricing(self):
+        service = self.knowledge["services"]["desktop_application"]
+        return f"""💻 **Desktop Application Pricing**
+
+{service['pricing_detail']}
+
+**What's included:**
+• Custom application development
+• UI/UX design
+• Database integration
+• Deployment and installation
+• 1 month free support
+
+**Technology:** Electron, Java, Python, C#, .NET
+
+Contact us at +91 99942 72027 for a detailed quote!"""
+    
+    def get_all_pricing(self):
+        pricing = []
+        for key, service in self.knowledge["services"].items():
+            if "pricing" in service:
+                pricing.append(f"• {service['name']}: {service['pricing']}")
+        
+        return f"""💰 **Complete Pricing Guide**
+
+{chr(10).join(pricing)}
+
+📞 For detailed quotes and custom requirements, contact us at +91 99942 72027 or email mediawebsix@gmail.com
+
+💡 All prices are starting estimates. Final cost depends on project complexity and requirements."""
+    
+    # ============================================================
+    # GENERAL HANDLER METHODS
     # ============================================================
     
     def get_all_services(self):
@@ -325,7 +464,7 @@ class MediaWeb6ResponseEngine:
             name = service["name"]
             desc = service["description"]
             services.append(f"• **{name}**: {desc}")
-        return "Media Web 6 offers 6 core services:\n\n" + "\n".join(services) + "\n\nContact us at +91 99942 72027 for more details!"
+        return "Media Web 6 offers 6 core services:\n\n" + "\n".join(services) + "\n\nFor pricing details, ask me about specific services or contact us at +91 99942 72027!"
     
     def get_web_development_info(self):
         service = self.knowledge["services"]["web_development"]
@@ -336,6 +475,7 @@ class MediaWeb6ResponseEngine:
 **Technologies:** {', '.join(service['technologies'])}
 **Project Types:** {', '.join(service['types'])}
 **Pricing:** {service['pricing']}
+**Details:** {service['pricing_detail']}
 
 We build custom websites that are fast, secure, and scalable. Contact us at +91 99942 72027 to discuss your project!"""
     
@@ -348,6 +488,7 @@ We build custom websites that are fast, secure, and scalable. Contact us at +91 
 **Technologies:** {', '.join(service['technologies'])}
 **App Types:** {', '.join(service['types'])}
 **Pricing:** {service['pricing']}
+**Details:** {service['pricing_detail']}
 
 We build native and cross-platform apps that deliver exceptional user experiences. Reach out at +91 99942 72027!"""
     
@@ -359,6 +500,7 @@ We build native and cross-platform apps that deliver exceptional user experience
 
 **Services:** {', '.join(service['services'])}
 **Pricing:** {service['pricing']}
+**Details:** {service['pricing_detail']}
 
 Improve your online visibility and rankings with our expert SEO strategies. Contact us at +91 99942 72027!"""
     
@@ -370,6 +512,7 @@ Improve your online visibility and rankings with our expert SEO strategies. Cont
 
 **Services:** {', '.join(service['services'])}
 **Pricing:** {service['pricing']}
+**Details:** {service['pricing_detail']}
 
 We create visually stunning designs that elevate your brand identity. Get in touch at +91 99942 72027!"""
     
@@ -381,6 +524,7 @@ We create visually stunning designs that elevate your brand identity. Get in tou
 
 **Services:** {', '.join(service['services'])}
 **Pricing:** {service['pricing']}
+**Details:** {service['pricing_detail']}
 
 Boost your online presence and drive conversions with our comprehensive digital marketing strategies. Call us at +91 99942 72027!"""
     
@@ -393,6 +537,7 @@ Boost your online presence and drive conversions with our comprehensive digital 
 **Technologies:** {', '.join(service['technologies'])}
 **App Types:** {', '.join(service['types'])}
 **Pricing:** {service['pricing']}
+**Details:** {service['pricing_detail']}
 
 We build powerful desktop applications for Windows, Mac, and Linux. Contact us at +91 99942 72027!"""
     
@@ -459,17 +604,6 @@ We take pride in delivering excellence in every project. Let's work together!"""
 
 We've successfully delivered projects across all these categories. Contact us to see our work!"""
     
-    def get_pricing(self):
-        pricing = []
-        for key, service in self.knowledge["services"].items():
-            if "pricing" in service:
-                pricing.append(f"• {service['name']}: {service['pricing']}")
-        return f"""💰 **Pricing Information**
-
-{chr(10).join(pricing)}
-
-These are starting prices. Contact us at +91 99942 72027 for a customized quote!"""
-    
     def get_technologies(self):
         techs = set()
         for key, service in self.knowledge["services"].items():
@@ -500,11 +634,11 @@ These core values guide everything we do at Media Web 6 Services."""
 
 Here are some things you can ask me:
 • What services do you offer?
-• Tell me about web development
-• Mobile app development pricing
-• SEO services
-• Graphic design
-• Digital marketing
+• How much does a website cost?
+• What is the cost of a mobile app?
+• SEO services pricing
+• Graphic design pricing
+• Digital marketing packages
 • Your mission and vision
 • Contact information
 • Portfolio and achievements
@@ -526,13 +660,15 @@ Founded: 2018
 Mission: To craft high-quality digital solutions that businesses can trust and rely on.
 Vision: To become a globally trusted partner for digital innovation.
 
-SERVICES:
-1. Web Development - Custom websites, e-commerce, CMS. Technologies: React, Next.js, Node.js, PHP, WordPress
-2. SEO Optimization - On-page, off-page, technical, local SEO
-3. Graphic Design - Logo design, branding, social media graphics, print materials
-4. Mobile Applications - iOS/Android apps using React Native, Flutter
-5. Digital Marketing - SEO, social media, content marketing, Google Ads
-6. Desktop Applications - Windows, Mac, Linux using Electron, Java, Python
+SERVICES AND PRICING:
+1. Web Development - Starting ₹25,000 (Basic) to ₹50,000+ (E-commerce)
+2. Mobile Applications - Starting ₹50,000 (Basic) to ₹1,00,000+ (Complex)
+3. SEO Optimization - Starting ₹10,000/month
+4. Graphic Design - Starting ₹5,000 (Logo) to ₹15,000+ (Branding)
+5. Digital Marketing - Starting ₹15,000/month
+6. Desktop Applications - Starting ₹30,000 (Basic) to ₹75,000+ (Enterprise)
+
+TECHNOLOGIES: React, Next.js, Node.js, PHP, WordPress, React Native, Flutter, Electron, Java, Python
 
 CONTACT:
 Email: mediawebsix@gmail.com
@@ -542,8 +678,6 @@ Hours: Mon-Fri, 9AM-7PM
 Website: www.mediaweb6.com
 
 ACHIEVEMENTS: 25+ Projects | 100% Quality | Fast Delivery
-
-PRICING: Web(₹25k+), Mobile(₹50k+), Marketing(₹15k/month), SEO(₹10k/month), Design(₹5k+), Desktop(₹30k+)
 """
     
     return f"""You are {assistant_name}, the official AI assistant for Media Web 6 Services.
@@ -552,10 +686,11 @@ PRICING: Web(₹25k+), Mobile(₹50k+), Marketing(₹15k/month), SEO(₹10k/mont
 
 Guidelines:
 - Be warm, conversational, and professional
-- Provide thorough, detailed answers
+- Provide thorough, detailed answers with specific pricing
 - Always include contact information when appropriate
-- For pricing, give estimates and encourage direct contact
+- For pricing, give estimates and encourage direct contact for custom quotes
 - Share mission/vision when asked about company values
+- Be specific about service costs and what's included
 
 {chr(10) + "User: " + user_name if user_name else ""}
 Date: {datetime.now().strftime('%B %d, %Y')}
@@ -615,7 +750,7 @@ def grok_reply(message, history, user_name, assistant_name="Media Web 6 AI"):
     return call_grok_api(messages, max_tokens=700, temperature=0.7)
 
 # ============================================================
-# VOICE BOT
+# VOICE BOT WITH MULTI-LANGUAGE SUPPORT
 # ============================================================
 
 class MediaWeb6AIBot:
@@ -623,13 +758,31 @@ class MediaWeb6AIBot:
         self.name = name
         self.speak_language = speak_language
         self.user_name = None
+        self.user_language = "en"  # Default language
         self.conversation_history = []
         self.audio_dir = "audio_files"
         os.makedirs(self.audio_dir, exist_ok=True)
         self.response_engine = MediaWeb6ResponseEngine()
         self.use_api = API_WORKING and bool(GROK_API_KEY)
         
+        # Supported languages for voice
+        self.supported_languages = {
+            'en': 'English',
+            'hi': 'Hindi',
+            'ta': 'Tamil',
+            'te': 'Telugu',
+            'ml': 'Malayalam',
+            'kn': 'Kannada',
+            'fr': 'French',
+            'de': 'German',
+            'es': 'Spanish',
+            'ja': 'Japanese',
+            'zh': 'Chinese',
+            'ar': 'Arabic'
+        }
+        
         print(f"🤖 Bot initialized - API Mode: {'ON' if self.use_api else 'OFF (Fallback)'}")
+        print(f"🗣️ Default Voice Language: {self.supported_languages.get(speak_language, 'English')}")
         
         self.responses = {
             "greeting": [
@@ -654,19 +807,75 @@ class MediaWeb6AIBot:
             ],
         }
 
+    def detect_language(self, text):
+        """Detect language from text for voice output"""
+        # Simple language detection based on common words
+        text_lower = text.lower()
+        
+        # Tamil detection
+        tamil_chars = ['அ', 'ஆ', 'இ', 'ஈ', 'உ', 'ஊ', 'எ', 'ஏ', 'ஐ', 'ஒ', 'ஓ', 'ஔ']
+        if any(char in text for char in tamil_chars):
+            return 'ta'
+        
+        # Hindi detection
+        hindi_chars = ['अ', 'आ', 'इ', 'ई', 'उ', 'ऊ', 'ऋ', 'ए', 'ऐ', 'ओ', 'औ', 'क', 'ख', 'ग', 'घ', 'च']
+        if any(char in text for char in hindi_chars):
+            return 'hi'
+        
+        # Telugu detection
+        telugu_chars = ['అ', 'ఆ', 'ఇ', 'ఈ', 'ఉ', 'ఊ', 'ఋ', 'ఎ', 'ఏ', 'ఐ', 'ఒ', 'ఓ', 'ఔ']
+        if any(char in text for char in telugu_chars):
+            return 'te'
+        
+        # Malayalam detection
+        malayalam_chars = ['അ', 'ആ', 'ഇ', 'ഈ', 'ഉ', 'ഊ', 'ഋ', 'എ', 'ഏ', 'ഐ', 'ഒ', 'ഓ', 'ഔ']
+        if any(char in text for char in malayalam_chars):
+            return 'ml'
+        
+        # Kannada detection
+        kannada_chars = ['ಅ', 'ಆ', 'ಇ', 'ಈ', 'ಉ', 'ಊ', 'ಋ', 'ಎ', 'ಏ', 'ಐ', 'ಒ', 'ಓ', 'ಔ']
+        if any(char in text for char in kannada_chars):
+            return 'kn'
+        
+        # Check for language keywords
+        if 'नमस्ते' in text or 'धन्यवाद' in text:
+            return 'hi'
+        if 'வணக்கம்' in text or 'நன்றி' in text:
+            return 'ta'
+        
+        # Default to user's preferred language or English
+        return self.user_language
+
     def generate_audio(self, text, lang=None):
-        lang = lang or self.speak_language
+        """Generate audio with language detection"""
         if not text:
             return None
+        
+        # If no language specified, detect from text
+        if lang is None:
+            lang = self.detect_language(text)
+        
+        # If language not supported, fallback to English
+        if lang not in self.supported_languages:
+            lang = 'en'
+        
         try:
             filename = f"speech_{uuid.uuid4().hex}.mp3"
             filepath = os.path.join(self.audio_dir, filename)
+            
+            print(f"🎤 Generating audio in: {self.supported_languages.get(lang, 'English')}")
             tts = gTTS(text=text, lang=lang, slow=False)
             tts.save(filepath)
             return filename
         except Exception as e:
             print(f"Audio error: {e}")
-            return None
+            # Try English fallback
+            try:
+                tts = gTTS(text=text, lang='en', slow=False)
+                tts.save(filepath)
+                return filename
+            except:
+                return None
 
     def get_auto_greeting(self):
         greetings = [
@@ -677,11 +886,23 @@ class MediaWeb6AIBot:
             greetings.append(f"Welcome back, {self.user_name}! How can I assist you with your digital needs today?")
         return random.choice(greetings)
 
+    def set_user_language(self, language_code):
+        """Set user's preferred language for voice output"""
+        if language_code in self.supported_languages:
+            self.user_language = language_code
+            print(f"🗣️ User language set to: {self.supported_languages[language_code]}")
+            return True
+        return False
+
     def generate_response(self, message):
         """Generate response - Try API first, fallback to intelligent engine"""
         if not message:
             return None
-        msg_lower = message.lower().strip()
+        
+        # Detect language from user message
+        detected_lang = self.detect_language(message)
+        if detected_lang in self.supported_languages:
+            self.user_language = detected_lang
         
         # First try: Grok API (if available)
         if self.use_api:
@@ -793,7 +1014,8 @@ def health_check():
         'api_working': API_WORKING,
         'timestamp': datetime.now().isoformat(),
         'company': MEDIA_WEB_6_KNOWLEDGE['company']['name'],
-        'services': len(MEDIA_WEB_6_KNOWLEDGE['services'])
+        'services': len(MEDIA_WEB_6_KNOWLEDGE['services']),
+        'languages_supported': list(MEDIA_WEB_6_KNOWLEDGE['response_engine'].supported_languages.keys()) if hasattr(MEDIA_WEB_6_KNOWLEDGE, 'response_engine') else ['en']
     })
 
 @app.route('/api/greeting', methods=['GET', 'OPTIONS'])
@@ -811,6 +1033,7 @@ def get_greeting():
             'greeting': greeting,
             'audio_url': f"/api/audio/{audio_file}" if audio_file else None,
             'user_name': bot.user_name,
+            'language': bot.user_language
         })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -832,7 +1055,14 @@ def chat():
         bot = get_user_bot(user_id)
         with user_locks[user_id]:
             response = bot.generate_response(message)
-            audio_file = bot.generate_audio(response)
+            
+            # Get preferred language from request or detect
+            preferred_lang = data.get('language', bot.user_language)
+            if preferred_lang in bot.supported_languages:
+                bot.user_language = preferred_lang
+            
+            # Generate audio in detected language
+            audio_file = bot.generate_audio(response, bot.user_language)
             
             if len(bot.conversation_history) > 50:
                 bot.conversation_history = bot.conversation_history[-50:]
@@ -844,7 +1074,9 @@ def chat():
                 'audio_url': f"/api/audio/{audio_file}" if audio_file else None,
                 'user_name': bot.user_name,
                 'history_count': len(bot.conversation_history),
-                'mode': 'api' if bot.use_api else 'fallback'
+                'mode': 'api' if bot.use_api else 'fallback',
+                'language': bot.user_language,
+                'language_name': bot.supported_languages.get(bot.user_language, 'English')
             })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -874,6 +1106,8 @@ def user_info():
             'user_name': bot.user_name if bot else None,
             'active_users': len(user_bots),
             'mode': 'hybrid',
+            'language': bot.user_language if bot else 'en',
+            'languages': bot.supported_languages if bot else ['en']
         })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -892,12 +1126,13 @@ if __name__ == '__main__':
         os.makedirs('audio_files')
     
     print("=" * 60)
-    print("🤖  MEDIA WEB 6 AI - HYBRID MODE")
+    print("🤖  MEDIA WEB 6 AI - HYBRID MODE WITH MULTI-LANGUAGE")
     print("=" * 60)
     print(f"📍 Server: http://0.0.0.0:{port}")
     print(f"🧠 API Mode: {'✅ Active' if API_WORKING else '❌ Fallback Mode'}")
     print(f"📚 Knowledge Base: {'✅ Loaded'}")
-    print(f"🎤 Voice: {'✅ Enabled'}")
+    print(f"🎤 Voice: {'✅ Enabled'} (Multi-language support)")
+    print(f"🗣️ Languages: English, Hindi, Tamil, Telugu, Malayalam, Kannada, French, German, Spanish, Japanese, Chinese, Arabic")
     print(f"🏢 Company: {MEDIA_WEB_6_KNOWLEDGE['company']['name']}")
     print(f"📞 Contact: {MEDIA_WEB_6_KNOWLEDGE['contact']['phone_primary']}")
     print(f"📧 Email: {MEDIA_WEB_6_KNOWLEDGE['contact']['email']}")
