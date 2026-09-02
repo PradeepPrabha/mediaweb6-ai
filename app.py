@@ -1,7 +1,7 @@
-# app.py - Media Web 6 AI Backend (FIXED MODEL NAME)
+# app.py - Media Web 6 AI Backend (HYBRID MODE)
 # ============================================================
 # MEDIA WEB 6 AI - Backend
-# Flask + Grok AI (via requests), Voice (gTTS)
+# Hybrid: Grok API + Intelligent Fallback
 # Fully trained with Media Web 6 Services complete data
 # ============================================================
 
@@ -30,22 +30,23 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # ============================================================
-# GROK AI - DIRECT API CALLS (FIXED)
+# GROK API SETUP
 # ============================================================
 
 GROK_API_KEY = os.getenv("GROK_API_KEY", "").strip()
-# ✅ FIXED: Use correct model name - grok-beta or grok-2-1212
-GROK_MODEL = os.getenv("GROK_MODEL", "grok-beta")  # Changed from grok-1
+# Try different model names - API will try them in order
+GROK_MODELS = ["grok-1", "grok-beta", "grok-2", "grok-2-1212"]
+GROK_MODEL = os.getenv("GROK_MODEL", "grok-1")
 
 print("=" * 60)
 print("🔑 GROK API STATUS:")
 print(f"   API Key: {'✅ Present' if GROK_API_KEY else '❌ Missing'}")
 print(f"   Length: {len(GROK_API_KEY) if GROK_API_KEY else 0}")
-print(f"   Model: {GROK_MODEL}")
+print(f"   Requested Model: {GROK_MODEL}")
 print("=" * 60)
 
 def call_grok_api(messages, max_tokens=600, temperature=0.7):
-    """Direct Grok API call using requests"""
+    """Direct Grok API call with automatic model fallback"""
     if not GROK_API_KEY:
         return None
     
@@ -54,70 +55,51 @@ def call_grok_api(messages, max_tokens=600, temperature=0.7):
         "Authorization": f"Bearer {GROK_API_KEY}",
         "Content-Type": "application/json"
     }
-    payload = {
-        "model": GROK_MODEL,
-        "messages": messages,
-        "max_tokens": max_tokens,
-        "temperature": temperature
-    }
     
-    try:
-        print(f"🤖 Calling Grok API with model: {GROK_MODEL}")
-        response = requests.post(url, headers=headers, json=payload, timeout=30)
-        
-        if response.status_code == 200:
-            data = response.json()
-            reply = data["choices"][0]["message"]["content"].strip()
-            print(f"✅ Grok response: {reply[:50]}...")
-            return reply
-        else:
-            print(f"⚠️ Grok API Error: {response.status_code}")
-            print(f"   Response: {response.text[:200]}")
+    # Try each model in order
+    models_to_try = [GROK_MODEL] + [m for m in GROK_MODELS if m != GROK_MODEL]
+    
+    for model in models_to_try:
+        try:
+            print(f"🤖 Trying Grok API with model: {model}")
+            payload = {
+                "model": model,
+                "messages": messages,
+                "max_tokens": max_tokens,
+                "temperature": temperature
+            }
             
-            # Try fallback model if available
-            if response.status_code == 400 and "Model not found" in response.text:
-                # Try alternative model names
-                fallback_models = ["grok-2-1212", "grok-2", "grok-beta"]
-                for fallback_model in fallback_models:
-                    if fallback_model != GROK_MODEL:
-                        print(f"🔄 Trying fallback model: {fallback_model}")
-                        payload["model"] = fallback_model
-                        fallback_response = requests.post(url, headers=headers, json=payload, timeout=30)
-                        if fallback_response.status_code == 200:
-                            data = fallback_response.json()
-                            reply = data["choices"][0]["message"]["content"].strip()
-                            print(f"✅ Fallback model {fallback_model} worked!")
-                            # Update env for future calls
-                            os.environ["GROK_MODEL"] = fallback_model
-                            return reply
-                        else:
-                            print(f"❌ Fallback model {fallback_model} failed: {fallback_response.status_code}")
+            response = requests.post(url, headers=headers, json=payload, timeout=30)
             
-            return None
-    except Exception as e:
-        print(f"⚠️ Grok API Exception: {e}")
-        return None
+            if response.status_code == 200:
+                data = response.json()
+                reply = data["choices"][0]["message"]["content"].strip()
+                print(f"✅ Grok response with {model}: {reply[:50]}...")
+                return reply
+            elif response.status_code == 400 and "Model not found" in response.text:
+                print(f"⚠️ Model {model} not found, trying next...")
+                continue
+            else:
+                print(f"⚠️ Grok API Error: {response.status_code} with {model}")
+                continue
+        except Exception as e:
+            print(f"⚠️ Grok API Exception with {model}: {e}")
+            continue
+    
+    print("❌ All Grok models failed")
+    return None
 
-# Test the API with correct model
+# Test the API
+API_WORKING = False
 if GROK_API_KEY:
     test_result = call_grok_api([{"role": "user", "content": "Hello"}], max_tokens=5)
     if test_result:
-        print(f"✅ Grok API is working with model: {GROK_MODEL}")
+        API_WORKING = True
+        print(f"✅ Grok API is working!")
     else:
-        print("⚠️ Grok API test failed - trying alternative models...")
-        # Try alternative models
-        alternative_models = ["grok-2-1212", "grok-2", "grok-beta"]
-        for alt_model in alternative_models:
-            if alt_model != GROK_MODEL:
-                print(f"🔄 Testing model: {alt_model}")
-                os.environ["GROK_MODEL"] = alt_model
-                GROK_MODEL = alt_model
-                test_result = call_grok_api([{"role": "user", "content": "Hello"}], max_tokens=5)
-                if test_result:
-                    print(f"✅ Grok API is working with model: {GROK_MODEL}")
-                    break
+        print("⚠️ Grok API test failed - using intelligent fallback mode")
 else:
-    print("❌ No GROK_API_KEY found - using fallback responses")
+    print("❌ No GROK_API_KEY found - using intelligent fallback mode")
 
 # ============================================================
 # MEDIA WEB 6 - COMPLETE KNOWLEDGE BASE
@@ -161,34 +143,40 @@ To shape a future where companies grow stronger through smart digital solutions.
             "name": "Web Development",
             "description": "Custom website development, e-commerce platforms, CMS solutions, and web applications",
             "technologies": ["React", "Next.js", "Node.js", "PHP", "WordPress", "Magento", "Shopify", "HTML5", "CSS3", "JavaScript"],
-            "types": ["Corporate Websites", "E-commerce Stores", "Web Portals", "PWA Applications", "Landing Pages"]
+            "types": ["Corporate Websites", "E-commerce Stores", "Web Portals", "PWA Applications", "Landing Pages"],
+            "pricing": "₹25,000+"
         },
         "seo_optimization": {
             "name": "SEO Optimization",
             "description": "Search engine optimization to improve organic rankings and visibility",
-            "services": ["On-Page SEO", "Off-Page SEO", "Technical SEO", "Local SEO", "E-commerce SEO", "Content Strategy"]
+            "services": ["On-Page SEO", "Off-Page SEO", "Technical SEO", "Local SEO", "E-commerce SEO", "Content Strategy"],
+            "pricing": "₹10,000+/month"
         },
         "graphic_design": {
             "name": "Graphic Design",
             "description": "Creative visual design solutions for branding and marketing",
-            "services": ["Logo Design", "Brand Identity", "Social Media Graphics", "Print Materials", "Packaging Design", "UI Design"]
+            "services": ["Logo Design", "Brand Identity", "Social Media Graphics", "Print Materials", "Packaging Design", "UI Design"],
+            "pricing": "₹5,000+"
         },
         "mobile_application": {
             "name": "Mobile Application",
             "description": "Native and cross-platform mobile applications for iOS and Android",
             "technologies": ["React Native", "Flutter", "Swift", "Kotlin", "Java"],
-            "types": ["Business Apps", "E-commerce Apps", "Social Apps", "Healthcare Apps", "Educational Apps"]
+            "types": ["Business Apps", "E-commerce Apps", "Social Apps", "Healthcare Apps", "Educational Apps"],
+            "pricing": "₹50,000+"
         },
         "digital_marketing": {
             "name": "Digital Marketing",
             "description": "Comprehensive digital marketing strategies to boost online presence and conversions",
-            "services": ["SEO", "Social Media Marketing", "Content Marketing", "Google Ads", "Email Marketing", "Analytics", "SMM"]
+            "services": ["SEO", "Social Media Marketing", "Content Marketing", "Google Ads", "Email Marketing", "Analytics", "SMM"],
+            "pricing": "₹15,000+/month"
         },
         "desktop_application": {
             "name": "Desktop Application",
             "description": "Custom desktop applications for Windows, Mac, and Linux",
             "technologies": ["Electron", "Java", "Python", "C#", ".NET"],
-            "types": ["Business Software", "Enterprise Applications", "Utility Tools", "Management Systems"]
+            "types": ["Business Software", "Enterprise Applications", "Utility Tools", "Management Systems"],
+            "pricing": "₹30,000+"
         }
     },
     
@@ -224,153 +212,353 @@ To shape a future where companies grow stronger through smart digital solutions.
     
     # FAQs
     "faqs": [
-        {"question": "What services do you offer?", 
+        {"question": "what services do you offer", 
          "answer": "We offer Web Development, SEO Optimization, Graphic Design, Mobile Application Development, Digital Marketing, and Desktop Application Development."},
-        {"question": "How much does a website cost?", 
+        {"question": "how much does a website cost", 
          "answer": "Our web development starts from ₹25,000, depending on complexity and features."},
-        {"question": "Do you offer mobile app development?", 
+        {"question": "do you offer mobile app development", 
          "answer": "Yes, we develop native and cross-platform mobile apps for iOS and Android using React Native and Flutter."},
-        {"question": "What is your mission?", 
+        {"question": "what is your mission", 
          "answer": "Our mission is to craft high-quality digital solutions that businesses can trust and rely on. We simplify complex challenges through intelligent, modern technology."},
-        {"question": "What is your vision?", 
+        {"question": "what is your vision", 
          "answer": "To become a globally trusted partner for digital innovation and set industry standards through quality, reliability, and user-focused design."},
-        {"question": "Do you provide SEO services?", 
+        {"question": "do you provide seo services", 
          "answer": "Yes, we offer comprehensive SEO services including on-page, off-page, technical SEO, local SEO, and e-commerce SEO."},
-        {"question": "Where are you located?", 
+        {"question": "where are you located", 
          "answer": "We are located in Coimbatore, Tamil Nadu. We serve clients globally."},
-        {"question": "What are your working hours?", 
+        {"question": "what are your working hours", 
          "answer": "We are available Monday to Friday, 9AM to 7PM."},
-        {"question": "How can I contact you?", 
+        {"question": "how can i contact you", 
          "answer": "You can call us at +91 99942 72027 or 0422 429 2027, email us at mediawebsix@gmail.com, or visit our website www.mediaweb6.com"},
-        {"question": "What types of projects have you worked on?", 
+        {"question": "what types of projects have you worked on", 
          "answer": "We've worked on E-Commerce, Advertising, Printing & Branding, Event Management, Digital Signage, News & Media, Directory Platforms, Export & Manufacturing, and NGO & Non-Profit projects."},
-        {"question": "What technologies do you use?", 
-         "answer": "We use modern technologies including React, Next.js, Node.js, PHP, WordPress, React Native, Flutter, and more."}
+        {"question": "what technologies do you use", 
+         "answer": "We use modern technologies including React, Next.js, Node.js, PHP, WordPress, React Native, Flutter, and more."},
+        {"question": "what is your tagline", 
+         "answer": "Our tagline is 'Transforming Business Through Digital Innovation'."},
+        {"question": "what graphic design services do you offer", 
+         "answer": "We offer Logo Design, Brand Identity, Social Media Graphics, Print Materials, Packaging Design, and UI Design."},
+        {"question": "what digital marketing services do you offer", 
+         "answer": "We offer SEO, Social Media Marketing, Content Marketing, Google Ads, Email Marketing, Analytics, and SMM."},
+        {"question": "do you develop desktop applications", 
+         "answer": "Yes, we develop custom desktop applications for Windows, Mac, and Linux using Electron, Java, Python, C#, and .NET."},
+        {"question": "what is media web 6", 
+         "answer": "Media Web 6 Services is a digital solutions company founded in 2018. We blend creativity, innovation, and technology to craft digital solutions that elevate brands and unlock new growth opportunities."}
     ]
 }
 
 # ============================================================
-# ENHANCED SYSTEM PROMPT - FULLY TRAINED
+# INTELLIGENT RESPONSE ENGINE (FALLBACK)
+# ============================================================
+
+class MediaWeb6ResponseEngine:
+    """Intelligent response engine - Used as fallback when API fails"""
+    
+    def __init__(self):
+        self.knowledge = MEDIA_WEB_6_KNOWLEDGE
+        self._build_response_patterns()
+    
+    def _build_response_patterns(self):
+        """Build intelligent response patterns"""
+        self.patterns = {
+            # Service queries
+            r"web development|website|web design|web dev": self.get_web_development_info,
+            r"mobile app|app development|ios app|android app": self.get_mobile_app_info,
+            r"seo|search engine|ranking": self.get_seo_info,
+            r"graphic design|design|logo|branding": self.get_graphic_design_info,
+            r"digital marketing|marketing|social media|ads": self.get_digital_marketing_info,
+            r"desktop app|desktop application|windows app": self.get_desktop_app_info,
+            r"services|offer|provide|do you do": self.get_all_services,
+            r"mission|purpose|goal": self.get_mission,
+            r"vision|future|aspire": self.get_vision,
+            r"contact|phone|email|reach": self.get_contact,
+            r"location|address|where": self.get_location,
+            r"hours|timing|working": self.get_working_hours,
+            r"achievements|projects|success": self.get_achievements,
+            r"portfolio|past work|projects": self.get_portfolio,
+            r"pricing|cost|price|charge": self.get_pricing,
+            r"technologies|tech stack|tools": self.get_technologies,
+            r"tagline|slogan": self.get_tagline,
+            r"values|principle|belief": self.get_values,
+        }
+    
+    def get_response(self, message):
+        """Get intelligent response based on message"""
+        message_lower = message.lower().strip()
+        
+        # Check FAQ first
+        for faq in self.knowledge["faqs"]:
+            if faq["question"] in message_lower:
+                return faq["answer"]
+        
+        # Check patterns
+        for pattern, handler in self.patterns.items():
+            if re.search(pattern, message_lower, re.IGNORECASE):
+                return handler()
+        
+        # Check if it's a greeting
+        if re.search(r"hello|hi|hey|greetings", message_lower, re.IGNORECASE):
+            return random.choice([
+                "Hello! Welcome to Media Web 6 Services. How can I help you today?",
+                "Hi there! I'm your AI assistant. What would you like to know about our services?",
+                "Welcome! Feel free to ask me about our web development, mobile apps, digital marketing, or any other services."
+            ])
+        
+        # Check if it's a thank you
+        if re.search(r"thank|thanks|appreciate", message_lower, re.IGNORECASE):
+            return "You're welcome! I'm glad I could help. Is there anything else you'd like to know about Media Web 6 Services?"
+        
+        # Check if it's a goodbye
+        if re.search(r"bye|goodbye|see you|farewell", message_lower, re.IGNORECASE):
+            return f"Thank you for connecting with Media Web 6! You can always reach us at +91 99942 72027 or email mediawebsix@gmail.com. Have a great day!"
+        
+        # Default response
+        return self.get_default_response()
+    
+    # ============================================================
+    # HANDLER METHODS
+    # ============================================================
+    
+    def get_all_services(self):
+        services = []
+        for key, service in self.knowledge["services"].items():
+            name = service["name"]
+            desc = service["description"]
+            services.append(f"• **{name}**: {desc}")
+        return "Media Web 6 offers 6 core services:\n\n" + "\n".join(services) + "\n\nContact us at +91 99942 72027 for more details!"
+    
+    def get_web_development_info(self):
+        service = self.knowledge["services"]["web_development"]
+        return f"""🌐 **Web Development Services**
+
+{service['description']}
+
+**Technologies:** {', '.join(service['technologies'])}
+**Project Types:** {', '.join(service['types'])}
+**Pricing:** {service['pricing']}
+
+We build custom websites that are fast, secure, and scalable. Contact us at +91 99942 72027 to discuss your project!"""
+    
+    def get_mobile_app_info(self):
+        service = self.knowledge["services"]["mobile_application"]
+        return f"""📱 **Mobile Application Development**
+
+{service['description']}
+
+**Technologies:** {', '.join(service['technologies'])}
+**App Types:** {', '.join(service['types'])}
+**Pricing:** {service['pricing']}
+
+We build native and cross-platform apps that deliver exceptional user experiences. Reach out at +91 99942 72027!"""
+    
+    def get_seo_info(self):
+        service = self.knowledge["services"]["seo_optimization"]
+        return f"""🔍 **SEO Optimization Services**
+
+{service['description']}
+
+**Services:** {', '.join(service['services'])}
+**Pricing:** {service['pricing']}
+
+Improve your online visibility and rankings with our expert SEO strategies. Contact us at +91 99942 72027!"""
+    
+    def get_graphic_design_info(self):
+        service = self.knowledge["services"]["graphic_design"]
+        return f"""🎨 **Graphic Design Services**
+
+{service['description']}
+
+**Services:** {', '.join(service['services'])}
+**Pricing:** {service['pricing']}
+
+We create visually stunning designs that elevate your brand identity. Get in touch at +91 99942 72027!"""
+    
+    def get_digital_marketing_info(self):
+        service = self.knowledge["services"]["digital_marketing"]
+        return f"""📊 **Digital Marketing Services**
+
+{service['description']}
+
+**Services:** {', '.join(service['services'])}
+**Pricing:** {service['pricing']}
+
+Boost your online presence and drive conversions with our comprehensive digital marketing strategies. Call us at +91 99942 72027!"""
+    
+    def get_desktop_app_info(self):
+        service = self.knowledge["services"]["desktop_application"]
+        return f"""💻 **Desktop Application Development**
+
+{service['description']}
+
+**Technologies:** {', '.join(service['technologies'])}
+**App Types:** {', '.join(service['types'])}
+**Pricing:** {service['pricing']}
+
+We build powerful desktop applications for Windows, Mac, and Linux. Contact us at +91 99942 72027!"""
+    
+    def get_mission(self):
+        return f"""🎯 **Our Mission**
+
+{self.knowledge['company']['mission']}
+
+We're committed to delivering digital solutions that create measurable impact and drive business growth."""
+    
+    def get_vision(self):
+        return f"""👁️ **Our Vision**
+
+{self.knowledge['company']['vision']}
+
+We aim to be your trusted partner for digital innovation and transformation."""
+    
+    def get_contact(self):
+        contact = self.knowledge["contact"]
+        return f"""📞 **Contact Media Web 6**
+
+📧 Email: {contact['email']}
+📱 Phone: {contact['phone_primary']}
+📞 Alternate: {contact['phone_secondary']}
+💬 WhatsApp: {contact['whatsapp']}
+🌐 Website: {contact['website']}
+📍 Location: {contact['address']}
+🕐 Hours: {contact['working_hours']}
+
+We're here to help! Reach out anytime."""
+    
+    def get_location(self):
+        return f"""📍 **Location**
+
+{self.knowledge['contact']['address']}
+
+We serve clients globally from our base in Coimbatore, Tamil Nadu. Contact us at +91 99942 72027!"""
+    
+    def get_working_hours(self):
+        return f"""🕐 **Working Hours**
+
+{self.knowledge['contact']['working_hours']}
+
+We're available to assist you during these hours. Call us at +91 99942 72027 or email mediawebsix@gmail.com!"""
+    
+    def get_achievements(self):
+        ach = self.knowledge["achievements"]
+        return f"""🏆 **Our Achievements**
+
+• {ach['projects']}
+• {ach['quality']}
+• {ach['delivery']}
+
+We take pride in delivering excellence in every project. Let's work together!"""
+    
+    def get_portfolio(self):
+        portfolio = self.knowledge["portfolio"]
+        categories = []
+        for key, value in portfolio.items():
+            categories.append(f"• {value}")
+        return f"""📂 **Our Portfolio Categories**
+
+{chr(10).join(categories)}
+
+We've successfully delivered projects across all these categories. Contact us to see our work!"""
+    
+    def get_pricing(self):
+        pricing = []
+        for key, service in self.knowledge["services"].items():
+            if "pricing" in service:
+                pricing.append(f"• {service['name']}: {service['pricing']}")
+        return f"""💰 **Pricing Information**
+
+{chr(10).join(pricing)}
+
+These are starting prices. Contact us at +91 99942 72027 for a customized quote!"""
+    
+    def get_technologies(self):
+        techs = set()
+        for key, service in self.knowledge["services"].items():
+            if "technologies" in service:
+                techs.update(service["technologies"])
+        return f"""🛠️ **Technologies We Use**
+
+{', '.join(sorted(techs))}
+
+We use modern, cutting-edge technologies to build robust digital solutions."""
+    
+    def get_tagline(self):
+        return f"""✨ **Our Tagline**
+
+{self.knowledge['company']['tagline']}
+
+We transform businesses through digital innovation!"""
+    
+    def get_values(self):
+        return f"""💎 **Our Values**
+
+{self.knowledge['company']['values']}
+
+These core values guide everything we do at Media Web 6 Services."""
+    
+    def get_default_response(self):
+        return f"""I'm here to help you with all things Media Web 6!
+
+Here are some things you can ask me:
+• What services do you offer?
+• Tell me about web development
+• Mobile app development pricing
+• SEO services
+• Graphic design
+• Digital marketing
+• Your mission and vision
+• Contact information
+• Portfolio and achievements
+• Technologies you use
+
+Or call us directly at +91 99942 72027 for immediate assistance!"""
+
+# ============================================================
+# ENHANCED SYSTEM PROMPT (For Grok API)
 # ============================================================
 
 def get_system_prompt(assistant_name="Media Web 6 AI", user_name=None):
     """Get the enhanced system prompt with complete company knowledge"""
     
     knowledge_base = f"""
-============================================================
-🏢 COMPANY INFORMATION
-============================================================
-Company Name: {MEDIA_WEB_6_KNOWLEDGE['company']['name']}
-Tagline: {MEDIA_WEB_6_KNOWLEDGE['company']['tagline']}
-Description: {MEDIA_WEB_6_KNOWLEDGE['company']['description']}
-Founded: {MEDIA_WEB_6_KNOWLEDGE['company']['founded']}
+COMPANY: Media Web 6 Services
+Tagline: Transforming Business Through Digital Innovation
+Founded: 2018
+Mission: To craft high-quality digital solutions that businesses can trust and rely on.
+Vision: To become a globally trusted partner for digital innovation.
 
-🎯 MISSION:
-{MEDIA_WEB_6_KNOWLEDGE['company']['mission']}
+SERVICES:
+1. Web Development - Custom websites, e-commerce, CMS. Technologies: React, Next.js, Node.js, PHP, WordPress
+2. SEO Optimization - On-page, off-page, technical, local SEO
+3. Graphic Design - Logo design, branding, social media graphics, print materials
+4. Mobile Applications - iOS/Android apps using React Native, Flutter
+5. Digital Marketing - SEO, social media, content marketing, Google Ads
+6. Desktop Applications - Windows, Mac, Linux using Electron, Java, Python
 
-👁️ VISION:
-{MEDIA_WEB_6_KNOWLEDGE['company']['vision']}
+CONTACT:
+Email: mediawebsix@gmail.com
+Phone: +91 99942 72027, 0422 429 2027
+Location: Coimbatore, Tamil Nadu
+Hours: Mon-Fri, 9AM-7PM
+Website: www.mediaweb6.com
 
-Values: {MEDIA_WEB_6_KNOWLEDGE['company']['values']}
+ACHIEVEMENTS: 25+ Projects | 100% Quality | Fast Delivery
 
-============================================================
-📞 CONTACT INFORMATION
-============================================================
-Email: {MEDIA_WEB_6_KNOWLEDGE['contact']['email']}
-Phone: {MEDIA_WEB_6_KNOWLEDGE['contact']['phone_primary']}
-Alternate Phone: {MEDIA_WEB_6_KNOWLEDGE['contact']['phone_secondary']}
-WhatsApp: {MEDIA_WEB_6_KNOWLEDGE['contact']['whatsapp']}
-Website: {MEDIA_WEB_6_KNOWLEDGE['contact']['website']}
-Location: {MEDIA_WEB_6_KNOWLEDGE['contact']['address']}
-Working Hours: {MEDIA_WEB_6_KNOWLEDGE['contact']['working_hours']}
-
-============================================================
-💼 SERVICES OFFERED
-============================================================
-
-1. 🌐 WEB DEVELOPMENT
-   {MEDIA_WEB_6_KNOWLEDGE['services']['web_development']['description']}
-   Technologies: {', '.join(MEDIA_WEB_6_KNOWLEDGE['services']['web_development']['technologies'])}
-   Types: {', '.join(MEDIA_WEB_6_KNOWLEDGE['services']['web_development']['types'])}
-
-2. 🔍 SEO OPTIMIZATION
-   {MEDIA_WEB_6_KNOWLEDGE['services']['seo_optimization']['description']}
-   Services: {', '.join(MEDIA_WEB_6_KNOWLEDGE['services']['seo_optimization']['services'])}
-
-3. 🎨 GRAPHIC DESIGN
-   {MEDIA_WEB_6_KNOWLEDGE['services']['graphic_design']['description']}
-   Services: {', '.join(MEDIA_WEB_6_KNOWLEDGE['services']['graphic_design']['services'])}
-
-4. 📱 MOBILE APPLICATION
-   {MEDIA_WEB_6_KNOWLEDGE['services']['mobile_application']['description']}
-   Technologies: {', '.join(MEDIA_WEB_6_KNOWLEDGE['services']['mobile_application']['technologies'])}
-   Types: {', '.join(MEDIA_WEB_6_KNOWLEDGE['services']['mobile_application']['types'])}
-
-5. 📊 DIGITAL MARKETING
-   {MEDIA_WEB_6_KNOWLEDGE['services']['digital_marketing']['description']}
-   Services: {', '.join(MEDIA_WEB_6_KNOWLEDGE['services']['digital_marketing']['services'])}
-
-6. 💻 DESKTOP APPLICATION
-   {MEDIA_WEB_6_KNOWLEDGE['services']['desktop_application']['description']}
-   Technologies: {', '.join(MEDIA_WEB_6_KNOWLEDGE['services']['desktop_application']['technologies'])}
-   Types: {', '.join(MEDIA_WEB_6_KNOWLEDGE['services']['desktop_application']['types'])}
-
-============================================================
-📂 PORTFOLIO CATEGORIES
-============================================================
-{MEDIA_WEB_6_KNOWLEDGE['portfolio']['e_commerce']}
-{MEDIA_WEB_6_KNOWLEDGE['portfolio']['advertising']}
-{MEDIA_WEB_6_KNOWLEDGE['portfolio']['printing_branding']}
-{MEDIA_WEB_6_KNOWLEDGE['portfolio']['event_management']}
-{MEDIA_WEB_6_KNOWLEDGE['portfolio']['digital_signage']}
-{MEDIA_WEB_6_KNOWLEDGE['portfolio']['news_media']}
-{MEDIA_WEB_6_KNOWLEDGE['portfolio']['directory_platform']}
-{MEDIA_WEB_6_KNOWLEDGE['portfolio']['export_manufacturing']}
-{MEDIA_WEB_6_KNOWLEDGE['portfolio']['ngo_nonprofit']}
-
-============================================================
-🏆 ACHIEVEMENTS
-============================================================
-- {MEDIA_WEB_6_KNOWLEDGE['achievements']['projects']}
-- {MEDIA_WEB_6_KNOWLEDGE['achievements']['quality']}
-- {MEDIA_WEB_6_KNOWLEDGE['achievements']['delivery']}
-
-============================================================
-💰 PRICING (Approximate)
-============================================================
-- Web Development: {MEDIA_WEB_6_KNOWLEDGE['pricing']['web_development']}
-- Mobile Apps: {MEDIA_WEB_6_KNOWLEDGE['pricing']['mobile_apps']}
-- Digital Marketing: {MEDIA_WEB_6_KNOWLEDGE['pricing']['digital_marketing']}
-- SEO: {MEDIA_WEB_6_KNOWLEDGE['pricing']['seo']}
-- Graphic Design: {MEDIA_WEB_6_KNOWLEDGE['pricing']['graphic_design']}
-- Desktop Applications: {MEDIA_WEB_6_KNOWLEDGE['pricing']['desktop_applications']}
+PRICING: Web(₹25k+), Mobile(₹50k+), Marketing(₹15k/month), SEO(₹10k/month), Design(₹5k+), Desktop(₹30k+)
 """
     
-    return f"""You are {assistant_name}, the official AI assistant for Media Web 6 Services. You are knowledgeable, friendly, and professional.
-
-IMPORTANT: You are representing Media Web 6 Services. All information provided below is accurate and official.
+    return f"""You are {assistant_name}, the official AI assistant for Media Web 6 Services.
 
 {knowledge_base}
 
-============================================================
-📋 RESPONSE GUIDELINES
-============================================================
-1. Use the knowledge above to provide accurate, detailed responses about Media Web 6 Services
-2. Be warm, conversational, and professional in your tone
-3. Provide thorough answers - don't limit yourself to 2-3 sentences
-4. If asked about pricing, give the estimated ranges provided
-5. For specific project costs, encourage users to contact the company directly
-6. Always include contact information when appropriate
-7. For questions about services, provide comprehensive details about what we offer
-8. Share our mission and vision when asked about company values
-9. Mention our portfolio categories when asked about past work
-10. Highlight our achievements (25+ projects, 100% quality, fast delivery)
-11. For questions you don't know, politely offer to connect users with a human representative
+Guidelines:
+- Be warm, conversational, and professional
+- Provide thorough, detailed answers
+- Always include contact information when appropriate
+- For pricing, give estimates and encourage direct contact
+- Share mission/vision when asked about company values
 
-{chr(10) + "User's Name: " + user_name + chr(10) if user_name else ""}
-Current Date: {datetime.now().strftime('%B %d, %Y')}
-
-Remember: You are the voice of Media Web 6 Services. Be helpful, accurate, and professional at all times.
+{chr(10) + "User: " + user_name if user_name else ""}
+Date: {datetime.now().strftime('%B %d, %Y')}
 """
 
 # ============================================================
@@ -406,11 +594,11 @@ DEFAULT_SETTINGS = {
 }
 
 # ============================================================
-# GROK REPLY - UPDATED
+# GROK REPLY
 # ============================================================
 
 def grok_reply(message, history, user_name, assistant_name="Media Web 6 AI"):
-    """Get reply from Grok with enhanced knowledge base"""
+    """Get reply from Grok API or return None if fails"""
     if not GROK_API_KEY:
         return None
     
@@ -418,18 +606,16 @@ def grok_reply(message, history, user_name, assistant_name="Media Web 6 AI"):
     
     messages = [{"role": "system", "content": system_prompt}]
     
-    # Use more history for better context (up to 10 turns)
     for turn in history[-10:]:
         messages.append({"role": "user", "content": turn["user"]})
         messages.append({"role": "assistant", "content": turn["assistant"]})
     
     messages.append({"role": "user", "content": message})
     
-    # Use higher max_tokens for detailed responses
     return call_grok_api(messages, max_tokens=700, temperature=0.7)
 
 # ============================================================
-# VOICE BOT - FULLY UPDATED
+# VOICE BOT
 # ============================================================
 
 class MediaWeb6AIBot:
@@ -440,6 +626,10 @@ class MediaWeb6AIBot:
         self.conversation_history = []
         self.audio_dir = "audio_files"
         os.makedirs(self.audio_dir, exist_ok=True)
+        self.response_engine = MediaWeb6ResponseEngine()
+        self.use_api = API_WORKING and bool(GROK_API_KEY)
+        
+        print(f"🤖 Bot initialized - API Mode: {'ON' if self.use_api else 'OFF (Fallback)'}")
         
         self.responses = {
             "greeting": [
@@ -487,56 +677,34 @@ class MediaWeb6AIBot:
             greetings.append(f"Welcome back, {self.user_name}! How can I assist you with your digital needs today?")
         return random.choice(greetings)
 
-    def _is_quick_intent(self, message, msg_lower):
-        """Check if this is a simple query that doesn't need AI"""
-        if len(msg_lower.split()) <= 4:
-            # Contact queries
-            if any(w in msg_lower for w in ["contact", "phone", "email", "address", "location"]):
-                return f"📞 Contact Media Web 6: Email: mediawebsix@gmail.com | Phone: +91 99942 72027, 0422 429 2027 | Location: Coimbatore, Tamil Nadu | Website: www.mediaweb6.com | Working Hours: Mon-Fri, 9AM-7PM"
-            # Services summary
-            if any(w in msg_lower for w in ["services", "offer", "provide", "do you do"]):
-                return "🌐 Media Web 6 offers 6 core services: Web Development, SEO Optimization, Graphic Design, Mobile Applications, Digital Marketing, and Desktop Applications. We transform businesses through digital innovation!"
-            # Mission
-            if any(w in msg_lower for w in ["mission", "purpose"]):
-                return "🎯 Our Mission: To craft high-quality digital solutions that businesses can trust and rely on. We simplify complex challenges through intelligent, modern technology and ensure every solution reflects precision, performance, and long-term value."
-            # Vision
-            if any(w in msg_lower for w in ["vision", "future"]):
-                return "👁️ Our Vision: To become a globally trusted partner for digital innovation, set industry standards through quality and reliability, and empower brands to evolve with confidence in a digital-first world."
-            # Achievements
-            if any(w in msg_lower for w in ["achievements", "projects", "success"]):
-                return "🏆 Media Web 6 Achievements: 25+ Projects Successfully Delivered | 100% Quality Focus on Performance & Reliability | Fast Delivery with Quick Turnaround"
-        return None
-
     def generate_response(self, message):
-        """Generate response - ALWAYS try AI first"""
+        """Generate response - Try API first, fallback to intelligent engine"""
         if not message:
             return None
         msg_lower = message.lower().strip()
         
-        # Check for very simple queries that don't need AI
-        quick_response = self._is_quick_intent(message, msg_lower)
-        if quick_response:
-            return quick_response
+        # First try: Grok API (if available)
+        if self.use_api:
+            grok_response = grok_reply(message, self.conversation_history, self.user_name, self.name)
+            if grok_response:
+                self.conversation_history.append({
+                    'user': message,
+                    'assistant': grok_response,
+                    'timestamp': datetime.now().isoformat(),
+                })
+                return grok_response
         
-        # ✅ ALWAYS try Grok AI first for all other messages
-        grok_response = grok_reply(message, self.conversation_history, self.user_name, self.name)
-        if grok_response:
-            return grok_response
+        # Second try: Intelligent Fallback Engine
+        fallback_response = self.response_engine.get_response(message)
         
-        # 🆘 FALLBACK - Only if AI fails
-        if any(w in msg_lower for w in ["hello", "hi", "hey", "hii", "greetings"]):
-            return f"Hello! Welcome to Media Web 6 Services. How can I help transform your business through digital innovation today?"
-        if any(w in msg_lower for w in ["help", "support", "assist"]):
-            return random.choice(self.responses["help"])
-        if any(w in msg_lower for w in ["thanks", "thank", "thank you", "appreciate"]):
-            return random.choice(self.responses["thanks"])
-        if any(w in msg_lower for w in ["bye", "goodbye", "good bye", "see you"]):
-            return random.choice(self.responses["farewell"])
-        if "time" in msg_lower:
-            return f"The current time is {datetime.now().strftime('%I:%M %p')}. We're available Monday to Friday, 9AM to 7PM."
+        # Store in conversation history
+        self.conversation_history.append({
+            'user': message,
+            'assistant': fallback_response,
+            'timestamp': datetime.now().isoformat(),
+        })
         
-        # Last resort - offer to connect with human
-        return f"I'm here to help! Could you please rephrase your question? Or you can contact us directly at +91 99942 72027 or email mediawebsix@gmail.com for immediate assistance."
+        return fallback_response
 
 # ============================================================
 # FLASK APP
@@ -553,20 +721,13 @@ app.config['SESSION_FILE_DIR'] = os.path.join(os.getcwd(), 'flask_sessions')
 os.makedirs(app.config['SESSION_FILE_DIR'], exist_ok=True)
 Session(app)
 
-# CORS - Updated with all domains
+# CORS
 ALLOWED_ORIGINS = [
-    'http://localhost:3000', 
-    'http://localhost:5173', 
-    'http://localhost:5174',
-    'http://127.0.0.1:3000', 
-    'http://127.0.0.1:5173',
+    'http://localhost:3000', 'http://localhost:5173', 'http://localhost:5174',
+    'http://127.0.0.1:3000', 'http://127.0.0.1:5173',
     'https://mediaweb6-ai.onrender.com',
-    'https://mediaweb6.com',
-    'http://mediaweb6.com',
-    'https://www.mediaweb6.com',
-    'http://www.mediaweb6.com',
-    'https://mediaweb6.vercel.app',
-    'https://mediaweb6.netlify.app',
+    'https://mediaweb6.com', 'http://mediaweb6.com',
+    'https://www.mediaweb6.com', 'http://www.mediaweb6.com',
 ]
 
 CORS(app, supports_credentials=True, origins=ALLOWED_ORIGINS,
@@ -592,7 +753,6 @@ def cors_preflight():
 user_bots = {}
 user_locks = {}
 SETTINGS = _read_json("settings.json", DEFAULT_SETTINGS)
-TASKS = _read_json("tasks.json", {})
 
 def get_user_bot(user_id):
     if user_id not in user_bots:
@@ -629,8 +789,8 @@ def health_check():
     return jsonify({
         'status': 'healthy',
         'active_users': len(user_bots),
-        'grok_enabled': bool(GROK_API_KEY),
-        'grok_model': GROK_MODEL,
+        'mode': 'hybrid',
+        'api_working': API_WORKING,
         'timestamp': datetime.now().isoformat(),
         'company': MEDIA_WEB_6_KNOWLEDGE['company']['name'],
         'services': len(MEDIA_WEB_6_KNOWLEDGE['services'])
@@ -673,13 +833,7 @@ def chat():
         with user_locks[user_id]:
             response = bot.generate_response(message)
             audio_file = bot.generate_audio(response)
-            bot.conversation_history.append({
-                'user': message,
-                'assistant': response,
-                'timestamp': datetime.now().isoformat(),
-            })
             
-            # Keep history manageable
             if len(bot.conversation_history) > 50:
                 bot.conversation_history = bot.conversation_history[-50:]
             
@@ -690,6 +844,7 @@ def chat():
                 'audio_url': f"/api/audio/{audio_file}" if audio_file else None,
                 'user_name': bot.user_name,
                 'history_count': len(bot.conversation_history),
+                'mode': 'api' if bot.use_api else 'fallback'
             })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -718,7 +873,7 @@ def user_info():
             'user_id': user_id,
             'user_name': bot.user_name if bot else None,
             'active_users': len(user_bots),
-            'grok_enabled': bool(GROK_API_KEY),
+            'mode': 'hybrid',
         })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -737,16 +892,19 @@ if __name__ == '__main__':
         os.makedirs('audio_files')
     
     print("=" * 60)
-    print("🤖  MEDIA WEB 6 AI - FULLY TRAINED")
+    print("🤖  MEDIA WEB 6 AI - HYBRID MODE")
     print("=" * 60)
     print(f"📍 Server: http://0.0.0.0:{port}")
-    print(f"🧠 Grok Model: {GROK_MODEL}")
-    print(f"🧠 Grok: {'✅ Active' if GROK_API_KEY else '❌ Disabled'}")
+    print(f"🧠 API Mode: {'✅ Active' if API_WORKING else '❌ Fallback Mode'}")
     print(f"📚 Knowledge Base: {'✅ Loaded'}")
     print(f"🎤 Voice: {'✅ Enabled'}")
     print(f"🏢 Company: {MEDIA_WEB_6_KNOWLEDGE['company']['name']}")
     print(f"📞 Contact: {MEDIA_WEB_6_KNOWLEDGE['contact']['phone_primary']}")
     print(f"📧 Email: {MEDIA_WEB_6_KNOWLEDGE['contact']['email']}")
+    print("=" * 60)
+    if not API_WORKING:
+        print("⚠️  Grok API not available - Using INTELLIGENT FALLBACK mode")
+        print("✅  All responses are pre-trained with your company data")
     print("=" * 60)
     
     app.run(host='0.0.0.0', port=port, debug=False)
