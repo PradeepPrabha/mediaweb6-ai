@@ -1,4 +1,4 @@
-# app.py - Media Web 6 AI Backend (FULLY UPDATED WITH ALL COMPANY DATA)
+# app.py - Media Web 6 AI Backend (FIXED MODEL NAME)
 # ============================================================
 # MEDIA WEB 6 AI - Backend
 # Flask + Grok AI (via requests), Voice (gTTS)
@@ -30,11 +30,12 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # ============================================================
-# GROK AI - DIRECT API CALLS
+# GROK AI - DIRECT API CALLS (FIXED)
 # ============================================================
 
 GROK_API_KEY = os.getenv("GROK_API_KEY", "").strip()
-GROK_MODEL = os.getenv("GROK_MODEL", "grok-1")
+# ✅ FIXED: Use correct model name - grok-beta or grok-2-1212
+GROK_MODEL = os.getenv("GROK_MODEL", "grok-beta")  # Changed from grok-1
 
 print("=" * 60)
 print("🔑 GROK API STATUS:")
@@ -44,7 +45,7 @@ print(f"   Model: {GROK_MODEL}")
 print("=" * 60)
 
 def call_grok_api(messages, max_tokens=600, temperature=0.7):
-    """Direct Grok API call using requests - NO httpx"""
+    """Direct Grok API call using requests"""
     if not GROK_API_KEY:
         return None
     
@@ -61,8 +62,9 @@ def call_grok_api(messages, max_tokens=600, temperature=0.7):
     }
     
     try:
-        print(f"🤖 Calling Grok API...")
+        print(f"🤖 Calling Grok API with model: {GROK_MODEL}")
         response = requests.post(url, headers=headers, json=payload, timeout=30)
+        
         if response.status_code == 200:
             data = response.json()
             reply = data["choices"][0]["message"]["content"].strip()
@@ -71,18 +73,49 @@ def call_grok_api(messages, max_tokens=600, temperature=0.7):
         else:
             print(f"⚠️ Grok API Error: {response.status_code}")
             print(f"   Response: {response.text[:200]}")
+            
+            # Try fallback model if available
+            if response.status_code == 400 and "Model not found" in response.text:
+                # Try alternative model names
+                fallback_models = ["grok-2-1212", "grok-2", "grok-beta"]
+                for fallback_model in fallback_models:
+                    if fallback_model != GROK_MODEL:
+                        print(f"🔄 Trying fallback model: {fallback_model}")
+                        payload["model"] = fallback_model
+                        fallback_response = requests.post(url, headers=headers, json=payload, timeout=30)
+                        if fallback_response.status_code == 200:
+                            data = fallback_response.json()
+                            reply = data["choices"][0]["message"]["content"].strip()
+                            print(f"✅ Fallback model {fallback_model} worked!")
+                            # Update env for future calls
+                            os.environ["GROK_MODEL"] = fallback_model
+                            return reply
+                        else:
+                            print(f"❌ Fallback model {fallback_model} failed: {fallback_response.status_code}")
+            
             return None
     except Exception as e:
         print(f"⚠️ Grok API Exception: {e}")
         return None
 
-# Test the API
+# Test the API with correct model
 if GROK_API_KEY:
     test_result = call_grok_api([{"role": "user", "content": "Hello"}], max_tokens=5)
     if test_result:
-        print("✅ Grok API is working!")
+        print(f"✅ Grok API is working with model: {GROK_MODEL}")
     else:
-        print("⚠️ Grok API test failed - check your API key")
+        print("⚠️ Grok API test failed - trying alternative models...")
+        # Try alternative models
+        alternative_models = ["grok-2-1212", "grok-2", "grok-beta"]
+        for alt_model in alternative_models:
+            if alt_model != GROK_MODEL:
+                print(f"🔄 Testing model: {alt_model}")
+                os.environ["GROK_MODEL"] = alt_model
+                GROK_MODEL = alt_model
+                test_result = call_grok_api([{"role": "user", "content": "Hello"}], max_tokens=5)
+                if test_result:
+                    print(f"✅ Grok API is working with model: {GROK_MODEL}")
+                    break
 else:
     print("❌ No GROK_API_KEY found - using fallback responses")
 
@@ -597,6 +630,7 @@ def health_check():
         'status': 'healthy',
         'active_users': len(user_bots),
         'grok_enabled': bool(GROK_API_KEY),
+        'grok_model': GROK_MODEL,
         'timestamp': datetime.now().isoformat(),
         'company': MEDIA_WEB_6_KNOWLEDGE['company']['name'],
         'services': len(MEDIA_WEB_6_KNOWLEDGE['services'])
@@ -706,6 +740,7 @@ if __name__ == '__main__':
     print("🤖  MEDIA WEB 6 AI - FULLY TRAINED")
     print("=" * 60)
     print(f"📍 Server: http://0.0.0.0:{port}")
+    print(f"🧠 Grok Model: {GROK_MODEL}")
     print(f"🧠 Grok: {'✅ Active' if GROK_API_KEY else '❌ Disabled'}")
     print(f"📚 Knowledge Base: {'✅ Loaded'}")
     print(f"🎤 Voice: {'✅ Enabled'}")
